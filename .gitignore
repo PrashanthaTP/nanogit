@@ -1,0 +1,11 @@
+# created by virtualenv automatically
+*
+!.gitignore
+!nanogit/
+!nanogit/*
+!LICENSE
+!README.md
+!setup.py
+
+__pycache__
++ *.egg-info/
