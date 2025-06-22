@@ -1,14 +1,12 @@
 import argparse
-import logging
 
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s - %(levelname)s | %(name)s - %(message)s',
-                    datefmt='%d-%m-%Y %H:%M:%S')
+from nanogit.utils import get_logger
+
+logger = get_logger()
 
 def init(args):
     logger.info("init called")
-    
+
 def parse_args():
     parser = argparse.ArgumentParser(prog="Nano Git",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
