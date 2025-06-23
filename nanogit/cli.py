@@ -1,11 +1,13 @@
 import argparse
 
 from nanogit.utils import get_logger
+from nanogit import core
 
 logger = get_logger()
 
 def init(args):
     logger.info("init called")
+    core.init()
 
 def parse_args():
     parser = argparse.ArgumentParser(prog="Nano Git",
