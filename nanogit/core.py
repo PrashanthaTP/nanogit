@@ -17,4 +17,7 @@ def hash_object(data):
     with open(os.path.join(OBJECT_DIR,oid),'wb') as file:
         file.write(data)
     return oid
-    
+
+def get_object(oid):
+    with open(os.path.join(OBJECT_DIR,oid),'rb') as file:
+        return file.read()
