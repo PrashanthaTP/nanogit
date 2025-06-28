@@ -3,6 +3,7 @@
 !.gitignore
 !nanogit/
 !nanogit/*
+!nanogit/*/**
 !LICENSE
 !README.md
 !setup.py
