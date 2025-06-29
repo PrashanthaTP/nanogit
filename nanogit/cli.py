@@ -17,7 +17,7 @@ def hash_object(args):
 def cat_file(args):
     #sys.stdout is buffered but sys.stdout.buffer isn't
     sys.stdout.flush()
-    sys.stdout.buffer.write(core.get_object(args.object))
+    sys.stdout.buffer.write(core.get_object(oid=args.object,expected=None))
     
 def parse_args():
     parser = argparse.ArgumentParser(prog="Nano Git",

@@ -12,12 +12,21 @@ def init():
     os.makedirs(OBJECT_DIR,exist_ok=True)
     logger.info("Initialized empty .ngit repository in %s"%(os.getcwd()))
 
-def hash_object(data):
-    oid = hashlib.sha1(data).hexdigest()
+def hash_object(data, type_="blob"):
+    obj = type_.encode() + b'\x00' + data
+    oid = hashlib.sha1(obj).hexdigest()
     with open(os.path.join(OBJECT_DIR,oid),'wb') as file:
-        file.write(data)
+        file.write(obj)
     return oid
 
-def get_object(oid):
+def get_object(oid,expected):
+    obj = ""
     with open(os.path.join(OBJECT_DIR,oid),'rb') as file:
-        return file.read()
+        obj = file.read()
+    type_,_,content = obj.partition(b'\x00')
+    type_ = type_.decode()
+    if expected is not None:
+        #Exception handling?
+        assert type_ == expected, f"Expected {expected}, got {type_}"
+
+    return content
