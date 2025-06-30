@@ -2,7 +2,7 @@ import argparse
 import sys
 
 from nanogit.utils import get_logger
-from nanogit import core
+from nanogit import core,mantle
 
 logger = get_logger()
 
@@ -19,6 +19,9 @@ def cat_file(args):
     sys.stdout.flush()
     sys.stdout.buffer.write(core.get_object(oid=args.object,expected=None))
     
+def write_tree(args):
+    mantle.write_tree()
+
 def parse_args():
     parser = argparse.ArgumentParser(prog="Nano Git",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -34,6 +37,9 @@ def parse_args():
     cat_file_parser = commands.add_parser("cat-file")
     cat_file_parser.set_defaults(func=cat_file)
     cat_file_parser.add_argument("object")
+    
+    write_tree_parser = commands.add_parser('write-tree')
+    write_tree_parser.set_defaults(func=write_tree)
     
     return parser.parse_args()
 
