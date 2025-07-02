@@ -1,4 +1,5 @@
 import os
+from nanogit import core
 
 def should_ignore_path(filepath):
     #TODO:; get git directory name from a single location
@@ -13,5 +14,7 @@ def write_tree(directory="."):
                 continue
             if entry.is_file(follow_symlinks=False):
                 print(full)#TODO: update object store
+                with open(full,'rb') as f:
+                    print(core.hash_object(f.read()))
             elif entry.is_dir(follow_symlinks=False):
                 write_tree(full)
