@@ -20,7 +20,7 @@ def cat_file(args):
     sys.stdout.buffer.write(core.get_object(oid=args.object,expected=None))
     
 def write_tree(args):
-    mantle.write_tree()
+    print(mantle.write_tree(args.directory))
 
 def parse_args():
     parser = argparse.ArgumentParser(prog="Nano Git",
@@ -40,7 +40,7 @@ def parse_args():
     
     write_tree_parser = commands.add_parser('write-tree')
     write_tree_parser.set_defaults(func=write_tree)
-    
+    write_tree_parser.add_argument("directory")
     return parser.parse_args()
 
 def main():
