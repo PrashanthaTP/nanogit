@@ -1,6 +1,6 @@
 # Nano Git
 
-![Banner-NanoGit](./nanogit/docs/images/Banner_NanoGit.png)
+![Banner-NanoGit](./nanogit/docs/images/Banner_NanoGit_2.png)
 >
 > Git implemention in Python with minimal features
 >
