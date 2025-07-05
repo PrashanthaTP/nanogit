@@ -23,3 +23,28 @@ def write_tree(directory="."):
             entries.append((entry.name, oid, type_))
     tree = ''.join(f"{type_} {oid} {name}\n" for (name,oid,type_) in entries)
     return core.hash_object(tree.encode(), 'tree')
+
+def iter_tree_entries(oid):
+    if not oid:
+        return
+    tree = core.get_object(oid,expected='tree')
+    for line in tree.decode().splitlines():
+        type_, item_oid, path = line.split(' ',2)
+        yield type_, item_oid, path
+
+def get_paths_dict(oid,base_path):
+    d = {}
+    for type_, item_oid, path in iter_tree_entries(oid):
+        if type_ == 'blob':
+            d[item_oid] = os.path.join(base_path,path)
+        elif type_ == 'tree':
+            d.update(get_paths_dict(item_oid,os.path.join(base_path,path)))
+        else:
+            assert False, f"Unknown oid type: {type_}"
+    return d
+            
+def read_tree(tree_oid):
+    for oid, path in get_paths_dict(tree_oid,base_path='.').items():
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        print(path)
+        # read data using oid and create file
