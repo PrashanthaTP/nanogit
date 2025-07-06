@@ -19,7 +19,7 @@ def hash_object(data, type_="blob"):
         file.write(obj)
     return oid
 
-def get_object(oid,expected):
+def get_object(oid,expected=None):
     obj = ""
     with open(os.path.join(OBJECT_DIR,oid),'rb') as file:
         obj = file.read()

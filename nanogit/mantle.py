@@ -24,6 +24,24 @@ def write_tree(directory="."):
     tree = ''.join(f"{type_} {oid} {name}\n" for (name,oid,type_) in entries)
     return core.hash_object(tree.encode(), 'tree')
 
+
+def delete_dir(parent_dir):
+    for root,dirs,files in os.walk(parent_dir, topdown=False):
+        for file in files:
+            file_fullpath = os.path.join(root,file)
+            if should_ignore_path(file_fullpath):
+                continue
+            if os.path.isfile(file_fullpath):
+                os.remove(file_fullpath)
+        for dir in dirs:
+            dir_fullpath = os.path.join(root,dir)
+            if should_ignore_path(dir_fullpath):
+                continue
+            try:
+                os.rmdir(dir_fullpath)
+            except (FileNotFoundError,OSError) as e:
+                continue
+            
 def iter_tree_entries(oid):
     if not oid:
         return
@@ -44,7 +62,12 @@ def get_paths_dict(oid,base_path):
     return d
             
 def read_tree(tree_oid):
+    if input(f"Type 'yes' to delete contents of current directory {os.getcwd()} : ").strip()=="yes":
+        # for now keeping this check 
+        # print("Running delete_dir")
+        delete_dir('.')
     for oid, path in get_paths_dict(tree_oid,base_path='.').items():
         os.makedirs(os.path.dirname(path), exist_ok=True)
         print(path)
-        # read data using oid and create file
+        with open(path,'wb') as f:
+            f.write(core.get_object(oid))
