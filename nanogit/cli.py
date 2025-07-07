@@ -25,6 +25,9 @@ def write_tree(args):
 def read_tree(args):
     mantle.read_tree(args.tree)
 
+def commit(args):
+    print(mantle.commit(args.message))
+
 def parse_args():
     parser = argparse.ArgumentParser(prog="Nano Git",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -40,14 +43,19 @@ def parse_args():
     cat_file_parser = commands.add_parser("cat-file")
     cat_file_parser.set_defaults(func=cat_file)
     cat_file_parser.add_argument("object")
-    
+
     write_tree_parser = commands.add_parser('write-tree')
     write_tree_parser.set_defaults(func=write_tree)
     write_tree_parser.add_argument("directory")
-    
+
     read_tree_parser = commands.add_parser('read-tree')
     read_tree_parser.set_defaults(func=read_tree)
     read_tree_parser.add_argument("tree")
+
+    commit_parser = commands.add_parser("commit")
+    commit_parser.set_defaults(func=commit)
+    commit_parser.add_argument("-m","--message",required=True)
+
     return parser.parse_args()
 
 def main():

@@ -71,3 +71,11 @@ def read_tree(tree_oid):
         print(path)
         with open(path,'wb') as f:
             f.write(core.get_object(oid))
+
+
+def commit(message):
+    details = f"tree + {write_tree()}\n"
+    details += "\n"
+    details += f"{message}"
+
+    return core.hash_object(details.encode(),type_="commit")
