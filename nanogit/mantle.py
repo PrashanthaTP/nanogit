@@ -74,8 +74,14 @@ def read_tree(tree_oid):
 
 
 def commit(message):
-    details = f"tree + {write_tree()}\n"
+    details = f"tree {write_tree()}\n"
     details += "\n"
     details += f"{message}"
 
-    return core.hash_object(details.encode(),type_="commit")
+    oid = core.hash_object(details.encode(),type_="commit")
+    set_HEAD(oid)
+    return oid
+    
+def set_HEAD(oid):
+    with open(os.path.join(core.GIT_DIR,'HEAD'),'w') as f:
+        f.write(oid)
