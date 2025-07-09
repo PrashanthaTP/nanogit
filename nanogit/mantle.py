@@ -1,6 +1,8 @@
 import os
 from nanogit import core
 
+HEAD_FILE=os.path.join(core.GIT_DIR,'HEAD')
+
 def should_ignore_path(filepath):
     #TODO:; get git directory name from a single location
     return '.ngit' in filepath.split(os.sep)
@@ -75,6 +77,9 @@ def read_tree(tree_oid):
 
 def commit(message):
     details = f"tree {write_tree()}\n"
+    parentHEAD = get_HEAD()
+    if parentHEAD:
+        details += f"parent {parentHEAD}\n"
     details += "\n"
     details += f"{message}"
 
@@ -82,6 +87,12 @@ def commit(message):
     set_HEAD(oid)
     return oid
     
+
+def get_HEAD():
+    if os.path.isfile(HEAD_FILE):
+        with open(HEAD_FILE,'r') as f:
+            return f.read().strip()
+
 def set_HEAD(oid):
-    with open(os.path.join(core.GIT_DIR,'HEAD'),'w') as f:
+    with open(HEAD_FILE,'w') as f:
         f.write(oid)
