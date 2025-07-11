@@ -1,4 +1,9 @@
 import os
+import operator
+import textwrap
+import itertools
+from collections import namedtuple
+
 from nanogit import core
 
 HEAD_FILE=os.path.join(core.GIT_DIR,'HEAD')
@@ -86,7 +91,35 @@ def commit(message):
     oid = core.hash_object(details.encode(),type_="commit")
     set_HEAD(oid)
     return oid
-    
+
+Commit = namedtuple("Commit",["tree","parent","message"])
+def get_commit(oid):
+    commit = core.get_object(oid,expected="commit")
+    lines = iter(commit.decode().splitlines())
+    parent = None
+    tree = None
+    # for line in lines:
+    for line in itertools.takewhile(operator.truth,lines):
+        key,value = line.split(' ',1)
+        if key=='tree':
+            tree = value
+        elif key=='parent':
+            parent = value
+        else:
+            assert False, f"Unknown key while getting commit info: {key}"
+            break
+    message = "\n".join(lines)
+    return Commit(tree=tree,parent=parent,message=message)
+
+def log():
+    oid = get_HEAD()
+    while oid:
+        commit = get_commit(oid)
+        log_msg = f"commit {oid}\n"
+        log_msg += textwrap.indent(commit.message,"    ")
+        log_msg += "\n"
+        print(log_msg)
+        oid = commit.parent
 
 def get_HEAD():
     if os.path.isfile(HEAD_FILE):

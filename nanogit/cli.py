@@ -28,6 +28,9 @@ def read_tree(args):
 def commit(args):
     print(mantle.commit(args.message))
 
+def log(args):
+    mantle.log()
+
 def parse_args():
     parser = argparse.ArgumentParser(prog="Nano Git",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -55,6 +58,9 @@ def parse_args():
     commit_parser = commands.add_parser("commit")
     commit_parser.set_defaults(func=commit)
     commit_parser.add_argument("-m","--message",required=True)
+
+    log_parser = commands.add_parser("log")
+    log_parser.set_defaults(func=log)
 
     return parser.parse_args()
 
