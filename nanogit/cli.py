@@ -29,7 +29,7 @@ def commit(args):
     print(mantle.commit(args.message))
 
 def log(args):
-    mantle.log()
+    mantle.log(args.oid)
 
 def parse_args():
     parser = argparse.ArgumentParser(prog="Nano Git",
@@ -61,6 +61,7 @@ def parse_args():
 
     log_parser = commands.add_parser("log")
     log_parser.set_defaults(func=log)
+    log_parser.add_argument("oid",nargs="?")#optional argument
 
     return parser.parse_args()
 

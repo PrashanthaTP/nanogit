@@ -111,8 +111,8 @@ def get_commit(oid):
     message = "\n".join(lines)
     return Commit(tree=tree,parent=parent,message=message)
 
-def log():
-    oid = get_HEAD()
+def log(oid=None):
+    oid = oid or get_HEAD()
     while oid:
         commit = get_commit(oid)
         log_msg = f"commit {oid}\n"
