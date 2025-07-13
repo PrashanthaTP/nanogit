@@ -121,6 +121,11 @@ def log(oid=None):
         print(log_msg)
         oid = commit.parent
 
+def checkout(oid):
+    commit = get_commit(oid)
+    read_tree(commit.tree)
+    set_HEAD(oid)
+
 def get_HEAD():
     if os.path.isfile(HEAD_FILE):
         with open(HEAD_FILE,'r') as f:
