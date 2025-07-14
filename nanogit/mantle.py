@@ -126,6 +126,9 @@ def checkout(oid):
     read_tree(commit.tree)
     set_HEAD(oid)
 
+def create_tag(name,oid):
+    oid = oid or get_HEAD()
+
 def get_HEAD():
     if os.path.isfile(HEAD_FILE):
         with open(HEAD_FILE,'r') as f:

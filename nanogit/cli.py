@@ -34,6 +34,9 @@ def log(args):
 def checkout(args):
     mantle.checkout(args.oid)
 
+def tag(args):
+    mantle.create_tag(args.name, args.oid)
+
 def parse_args():
     parser = argparse.ArgumentParser(prog="Nano Git",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -70,6 +73,11 @@ def parse_args():
     checkout_parser.set_defaults(func=checkout)
     checkout_parser.add_argument("oid")
     
+    tag_parser = commands.add_parser("tag")
+    tag_parser.set_defaults(func=tag)
+    tag_parser.add_argument("name")
+    tag_parser.add_argument("oid",nargs="?")
+
     return parser.parse_args()
 
 def main():
