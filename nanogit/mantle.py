@@ -6,8 +6,6 @@ from collections import namedtuple
 
 from nanogit import core
 
-HEAD_FILE=os.path.join(core.GIT_DIR,'HEAD')
-
 def should_ignore_path(filepath):
     #TODO:; get git directory name from a single location
     return '.ngit' in filepath.split(os.sep)
@@ -82,14 +80,14 @@ def read_tree(tree_oid):
 
 def commit(message):
     details = f"tree {write_tree()}\n"
-    parentHEAD = get_HEAD()
+    parentHEAD = get_ref(core.HEAD_REF)
     if parentHEAD:
         details += f"parent {parentHEAD}\n"
     details += "\n"
     details += f"{message}"
 
     oid = core.hash_object(details.encode(),type_="commit")
-    set_HEAD(oid)
+    set_ref(core.HEAD_REF,oid)
     return oid
 
 Commit = namedtuple("Commit",["tree","parent","message"])
@@ -112,7 +110,7 @@ def get_commit(oid):
     return Commit(tree=tree,parent=parent,message=message)
 
 def log(oid=None):
-    oid = oid or get_HEAD()
+    oid = oid or get_ref(core.HEAD_REF)
     while oid:
         commit = get_commit(oid)
         log_msg = f"commit {oid}\n"
@@ -124,16 +122,17 @@ def log(oid=None):
 def checkout(oid):
     commit = get_commit(oid)
     read_tree(commit.tree)
-    set_HEAD(oid)
+    set_ref(core.HEAD_REF,oid)
 
 def create_tag(name,oid):
-    oid = oid or get_HEAD()
+    oid = oid or get_ref(core.HEAD_REF)
 
-def get_HEAD():
-    if os.path.isfile(HEAD_FILE):
-        with open(HEAD_FILE,'r') as f:
+def get_ref(ref):
+    ref_file = os.path.join(core.GIT_DIR,ref)
+    if os.path.isfile(ref_file):
+        with open(ref_file,'r') as f:
             return f.read().strip()
 
-def set_HEAD(oid):
-    with open(HEAD_FILE,'w') as f:
+def set_ref(ref,oid):
+    with open(os.path.join(core.GIT_DIR,ref),'w') as f:
         f.write(oid)

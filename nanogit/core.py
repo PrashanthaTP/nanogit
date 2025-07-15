@@ -6,6 +6,9 @@ logger = get_logger()
 
 GIT_DIR=".ngit"
 OBJECT_DIR=os.path.join(GIT_DIR,"objects")
+HEAD_REF="HEAD"
+HEAD_FILE=os.path.join(GIT_DIR,HEAD_REF)
+
 #TODO: create git direcotry in specified directory - take it as an argument
 def init():
     os.makedirs(GIT_DIR,exist_ok=True)
