@@ -126,13 +126,16 @@ def checkout(oid):
 
 def create_tag(name,oid):
     oid = oid or get_ref(core.HEAD_REF)
+    set_ref(os.path.join(core.TAG_DIR,name),oid)
 
 def get_ref(ref):
-    ref_file = os.path.join(core.GIT_DIR,ref)
-    if os.path.isfile(ref_file):
-        with open(ref_file,'r') as f:
+    ref_path = os.path.join(core.GIT_DIR,ref)
+    if os.path.isfile(ref_path):
+        with open(ref_path,'r') as f:
             return f.read().strip()
 
 def set_ref(ref,oid):
-    with open(os.path.join(core.GIT_DIR,ref),'w') as f:
+    ref_path = os.path.join(core.GIT_DIR,ref)   
+    os.makedirs(os.path.dirname(ref_path), exist_ok=True)
+    with open(ref_path,'w') as f:
         f.write(oid)
