@@ -128,6 +128,9 @@ def create_tag(name,oid):
     oid = oid or get_ref(core.HEAD_REF)
     set_ref(os.path.join(core.TAG_DIR,name),oid)
 
+def get_oid(ref_name):
+    return get_ref(ref_name) or ref_name
+
 def get_ref(ref):
     ref_path = os.path.join(core.GIT_DIR,ref)
     if os.path.isfile(ref_path):
