@@ -1,5 +1,6 @@
 import os
 import operator
+import string
 import textwrap
 import itertools
 from collections import namedtuple
@@ -129,7 +130,21 @@ def create_tag(name,oid):
     set_ref(os.path.join(core.TAG_DIR,name),oid)
 
 def get_oid(ref_name):
-    return get_ref(ref_name) or ref_name
+    refs_to_try = [
+        ref_name,
+        os.path.join("refs",ref_name),
+        os.path.join(core.TAG_DIR,ref_name),
+        os.path.join("refs","heads",ref_name)
+        ]
+    for ref in refs_to_try:
+        oid = get_ref(ref)
+        if oid:
+            return oid
+    # check if ref_name is SHA1
+    isOid = all(letter in string.hexdigits for letter in ref_name)
+    if len(ref_name)==core.OID_LEN and isOid:
+        return ref_name
+    assert False, f"Unknown ref name {ref_name}"
 
 def get_ref(ref):
     ref_path = os.path.join(core.GIT_DIR,ref)
