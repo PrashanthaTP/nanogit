@@ -111,7 +111,7 @@ def get_commit(oid):
     return Commit(tree=tree,parent=parent,message=message)
 
 def log(oid=None):
-    oid = oid or get_ref(core.HEAD_REF)
+    oid = get_oid(oid)#!TODO is it needed? what if a 'named' ref passed?
     while oid:
         commit = get_commit(oid)
         log_msg = f"commit {oid}\n"
@@ -126,10 +126,11 @@ def checkout(oid):
     set_ref(core.HEAD_REF,oid)
 
 def create_tag(name,oid):
-    oid = oid or get_ref(core.HEAD_REF)
     set_ref(os.path.join(core.TAG_DIR,name),oid)
 
 def get_oid(ref_name):
+    if ref_name == "@":
+        ref_name = core.HEAD_REF
     refs_to_try = [
         ref_name,
         os.path.join("refs",ref_name),

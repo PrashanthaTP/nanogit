@@ -68,7 +68,7 @@ def parse_args():
 
     log_parser = commands.add_parser("log")
     log_parser.set_defaults(func=log)
-    log_parser.add_argument("oid",type=type_oid,nargs="?")#optional argument
+    log_parser.add_argument("oid",type=type_oid,default="@",nargs="?")#optional argument
 
     checkout_parser = commands.add_parser("checkout")
     checkout_parser.set_defaults(func=checkout)
@@ -77,7 +77,7 @@ def parse_args():
     tag_parser = commands.add_parser("tag")
     tag_parser.set_defaults(func=tag)
     tag_parser.add_argument("name")
-    tag_parser.add_argument("oid",type=type_oid,nargs="?")
+    tag_parser.add_argument("oid",type=type_oid,default="@",nargs="?")
 
     return parser.parse_args()
 
