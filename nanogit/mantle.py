@@ -147,6 +147,15 @@ def get_oid(ref_name):
         return ref_name
     assert False, f"Unknown ref name {ref_name}"
 
+def iter_refs():
+    refs = [core.HEAD_REF]
+    for root,_,files in os.walk(os.path.join(core.GIT_DIR,core.REF_DIR)):
+        root = os.path.relpath(root,start=core.GIT_DIR)
+        refs.extend(os.path.join(root,ref) for ref in files)
+    
+    for refname in refs:
+        yield refname,get_ref(refname)
+        
 def get_ref(ref):
     ref_path = os.path.join(core.GIT_DIR,ref)
     if os.path.isfile(ref_path):
