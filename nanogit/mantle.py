@@ -156,6 +156,19 @@ def iter_refs():
     for refname in refs:
         yield refname,get_ref(refname)
         
+def iter_commits_and_parents(oids):
+    oids = set(oids)
+    visited = set()
+    while oids:
+        oid = oids.pop()
+        if not oid or oid in visited:
+            continue
+        visited.add(oid)
+        yield oid
+        
+        commit = get_commit(oid)
+        oids.add(commit.parent)
+    
 def get_ref(ref):
     ref_path = os.path.join(core.GIT_DIR,ref)
     if os.path.isfile(ref_path):

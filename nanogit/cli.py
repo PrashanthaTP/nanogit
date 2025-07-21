@@ -39,8 +39,16 @@ def tag(args):
     mantle.create_tag(args.name, args.oid)
 
 def k(args):
+    oids = set()
     for refname, ref in mantle.iter_refs():
+        oids.add(ref)
         print(f"{refname} : {ref}")
+    
+    for oid in mantle.iter_commits_and_parents(oids):
+        commit = mantle.get_commit(oid)
+        print(oid)
+        if commit.parent:
+            print("Parent: ",commit.parent)
 
 def parse_args():
     parser = argparse.ArgumentParser(prog="Nano Git",
