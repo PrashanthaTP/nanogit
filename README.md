@@ -15,5 +15,4 @@
 | 4     | **write-tree**  | Create object id for directory                 |
 | 5     | **read-tree**   | Extract tree from object                       |
 | 6     | **commit**      | Save current working directory in object store |
-
-
+| 7     | **log**         | Display history of commits                     |
