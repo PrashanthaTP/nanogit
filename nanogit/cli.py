@@ -39,16 +39,24 @@ def tag(args):
     mantle.create_tag(args.name, args.oid)
 
 def k(args):
+    dot = 'digraph commits {\n'
     oids = set()
     for refname, ref in mantle.iter_refs():
+        dot += f'"{refname}" [shape=note]\n'
+        dot += f'"{refname}" -> "{ref}"\n'
         oids.add(ref)
-        print(f"{refname} : {ref}")
+        # print(f"{refname} : {ref}")
     
     for oid in mantle.iter_commits_and_parents(oids):
         commit = mantle.get_commit(oid)
-        print(oid)
+        dot += f'"{oid}" [shape=box style=filled label="{oid[:10]}"]\n'
+        # print(oid)
         if commit.parent:
-            print("Parent: ",commit.parent)
+            dot += f'"{oid}" -> "{commit.parent}"\n'
+            # print("Parent: ",commit.parent)
+    dot += '}'
+    print(dot)
+    print("Note: View in http://www.webgraphviz.com/")
 
 def parse_args():
     parser = argparse.ArgumentParser(prog="Nano Git",
