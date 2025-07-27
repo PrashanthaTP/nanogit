@@ -167,7 +167,10 @@ def iter_commits_and_parents(oids):
         
         commit = get_commit(oid)
         oids.appendleft(commit.parent)
-    
+        
+def create_branch(branch_name,oid):
+    set_ref(os.path.join("refs","heads",branch_name),oid)
+
 def get_ref(ref):
     ref_path = os.path.join(core.GIT_DIR,ref)
     if os.path.isfile(ref_path):
