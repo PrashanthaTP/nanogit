@@ -173,9 +173,13 @@ def create_branch(branch_name,oid):
 
 def get_ref(ref):
     ref_path = os.path.join(core.GIT_DIR,ref)
+    value = None
     if os.path.isfile(ref_path):
         with open(ref_path,'r') as f:
-            return f.read().strip()
+            value = f.read().strip()
+    if value and value.startswith("ref:"):
+        return get_ref(value.split(":",1)[1].strip())
+    return value
 
 def set_ref(ref,oid):
     ref_path = os.path.join(core.GIT_DIR,ref)   
