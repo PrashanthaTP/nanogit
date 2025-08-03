@@ -43,8 +43,8 @@ def k(args):
     oids = set()
     for refname, ref in mantle.iter_refs():
         dot += f'"{refname}" [shape=note]\n'
-        dot += f'"{refname}" -> "{ref}"\n'
-        oids.add(ref)
+        dot += f'"{refname}" -> "{ref.value}"\n'
+        oids.add(ref.value)
         # print(f"{refname} : {ref}")
     
     for oid in mantle.iter_commits_and_parents(oids):

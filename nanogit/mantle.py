@@ -7,6 +7,8 @@ from collections import namedtuple,deque
 
 from nanogit import core
 
+RefValue = namedtuple("RefValue",["symbolic","value"])
+
 def should_ignore_path(filepath):
     #TODO:; get git directory name from a single location
     return '.ngit' in filepath.split(os.sep)
@@ -81,14 +83,14 @@ def read_tree(tree_oid):
 
 def commit(message):
     details = f"tree {write_tree()}\n"
-    parentHEAD = get_ref(core.HEAD_REF)
+    parentHEAD = get_ref(core.HEAD_REF).value
     if parentHEAD:
         details += f"parent {parentHEAD}\n"
     details += "\n"
     details += f"{message}"
 
     oid = core.hash_object(details.encode(),type_="commit")
-    set_ref(core.HEAD_REF,oid)
+    set_ref(core.HEAD_REF,RefValue(symbolic=False,value=oid))
     return oid
 
 Commit = namedtuple("Commit",["tree","parent","message"])
@@ -122,10 +124,10 @@ def log(oid=None):
 def checkout(oid):
     commit = get_commit(oid)
     read_tree(commit.tree)
-    set_ref(core.HEAD_REF,oid)
+    set_ref(core.HEAD_REF,RefValue(symbolic=False,value=oid))
 
 def create_tag(name,oid):
-    set_ref(os.path.join(core.TAG_DIR,name),oid)
+    set_ref(os.path.join(core.TAG_DIR,name),RefValue(symbolic=False,value=oid))
 
 def get_oid(ref_name):
     if ref_name == "@":
@@ -137,7 +139,7 @@ def get_oid(ref_name):
         os.path.join("refs","heads",ref_name)
         ]
     for ref in refs_to_try:
-        oid = get_ref(ref)
+        oid = get_ref(ref).value
         if oid:
             return oid
     # check if ref_name is SHA1
@@ -169,9 +171,9 @@ def iter_commits_and_parents(oids):
         oids.appendleft(commit.parent)
         
 def create_branch(branch_name,oid):
-    set_ref(os.path.join("refs","heads",branch_name),oid)
+    set_ref(os.path.join("refs","heads",branch_name),RefValue(symbolic=False,value=oid))
 
-def get_ref(ref):
+def get_ref(ref)->RefValue:
     ref_path = os.path.join(core.GIT_DIR,ref)
     value = None
     if os.path.isfile(ref_path):
@@ -179,10 +181,11 @@ def get_ref(ref):
             value = f.read().strip()
     if value and value.startswith("ref:"):
         return get_ref(value.split(":",1)[1].strip())
-    return value
+    return RefValue(symbolic=False,value=value)
 
-def set_ref(ref,oid):
+def set_ref(ref,oid: RefValue):
+    assert not oid.symbolic
     ref_path = os.path.join(core.GIT_DIR,ref)   
     os.makedirs(os.path.dirname(ref_path), exist_ok=True)
     with open(ref_path,'w') as f:
-        f.write(oid)
+        f.write(oid.value)
