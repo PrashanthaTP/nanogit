@@ -174,17 +174,24 @@ def create_branch(branch_name,oid):
     set_ref(os.path.join("refs","heads",branch_name),RefValue(symbolic=False,value=oid))
 
 def get_ref(ref)->RefValue:
+    return __get_ref_internal(ref)[1]
+
+def __get_ref_internal(ref):
+    #always returns symbolic = False
     ref_path = os.path.join(core.GIT_DIR,ref)
     value = None
     if os.path.isfile(ref_path):
         with open(ref_path,'r') as f:
             value = f.read().strip()
-    if value and value.startswith("ref:"):
-        return get_ref(value.split(":",1)[1].strip())
-    return RefValue(symbolic=False,value=value)
+    symbolic = bool(value) and value.startswith("ref:")
+    if symbolic:
+        value = value.split(":",1)[1].strip()
+        return __get_ref_internal(value)
+    return ref, RefValue(symbolic=False,value=value)
 
 def set_ref(ref,oid: RefValue):
     assert not oid.symbolic
+    ref = __get_ref_internal(ref)[0]
     ref_path = os.path.join(core.GIT_DIR,ref)   
     os.makedirs(os.path.dirname(ref_path), exist_ok=True)
     with open(ref_path,'w') as f:
