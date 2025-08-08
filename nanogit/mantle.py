@@ -139,7 +139,7 @@ def get_oid(ref_name):
         os.path.join("refs","heads",ref_name)
         ]
     for ref in refs_to_try:
-        oid = get_ref(ref).value
+        oid = get_ref(ref,deref=False).value
         if oid:
             return oid
     # check if ref_name is SHA1
@@ -148,14 +148,14 @@ def get_oid(ref_name):
         return ref_name
     assert False, f"Unknown ref name {ref_name}"
 
-def iter_refs():
+def iter_refs(deref=True):
     refs = [core.HEAD_REF]
     for root,_,files in os.walk(os.path.join(core.GIT_DIR,core.REF_DIR)):
         root = os.path.relpath(root,start=core.GIT_DIR)
         refs.extend(os.path.join(root,ref) for ref in files)
     
     for refname in refs:
-        yield refname,get_ref(refname)
+        yield refname,get_ref(refname,deref=deref   )
         
 def iter_commits_and_parents(oids):
     oids = deque(oids)
@@ -173,10 +173,10 @@ def iter_commits_and_parents(oids):
 def create_branch(branch_name,oid):
     set_ref(os.path.join("refs","heads",branch_name),RefValue(symbolic=False,value=oid))
 
-def get_ref(ref)->RefValue:
-    return __get_ref_internal(ref)[1]
+def get_ref(ref,deref=True)->RefValue:
+    return __get_ref_internal(ref,deref)[1]
 
-def __get_ref_internal(ref):
+def __get_ref_internal(ref,deref):
     #always returns symbolic = False
     ref_path = os.path.join(core.GIT_DIR,ref)
     value = None
@@ -186,12 +186,13 @@ def __get_ref_internal(ref):
     symbolic = bool(value) and value.startswith("ref:")
     if symbolic:
         value = value.split(":",1)[1].strip()
-        return __get_ref_internal(value)
-    return ref, RefValue(symbolic=False,value=value)
+        if deref:
+            return __get_ref_internal(value,deref=True)
+    return ref, RefValue(symbolic=symbolic,value=value)
 
-def set_ref(ref,oid: RefValue):
+def set_ref(ref,oid: RefValue,deref=True):
     assert not oid.symbolic
-    ref = __get_ref_internal(ref)[0]
+    ref = __get_ref_internal(ref,deref  )[0]
     ref_path = os.path.join(core.GIT_DIR,ref)   
     os.makedirs(os.path.dirname(ref_path), exist_ok=True)
     with open(ref_path,'w') as f:
